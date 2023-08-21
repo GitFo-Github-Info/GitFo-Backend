@@ -1,4 +1,5 @@
 require("dotenv").config();
+const morgan = require("morgan");
 const express = require("express");
 const session = require("express-session");
 
@@ -10,6 +11,12 @@ const searchRouter = require("./routes/search");
 const env = process.env;
 const app = express();
 app.set("port", process.env.PORT || 3000);
+
+if (env.NODE_ENV === "production") {
+  app.use(morgan("combined"));
+} else {
+  app.use(morgan("dev"));
+}
 
 app.use(
   session({
