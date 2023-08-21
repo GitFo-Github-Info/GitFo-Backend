@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
     })
     .then((response) => {
       const user_data = response.data;
-      console.log(user_data);
+    //   console.log(user_data);
       res.send(user_data);
     })
     .catch((error) => {
