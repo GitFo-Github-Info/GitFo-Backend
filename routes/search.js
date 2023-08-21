@@ -2,14 +2,10 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 
-router.get("/", (req, res) => {
-  const token = req.session.token;
+router.get("/:id", (req, res) => {
+  const id = req.params.id;
   axios
-    .get("https://api.github.com/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    .get(`https://api.github.com/users/${id}`)
     .then((response) => {
       const user_data = response.data;
       console.log(user_data);
