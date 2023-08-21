@@ -28,7 +28,8 @@ router.get("/github/callback", (req, res) => {
     )
     .then((result) => {
       console.log(result.data.access_token);
-      res.send("you are authorized " + result.data.access_token);
+      req.session.token = result.data.access_token;
+      res.send(result.data.access_token);
     })
     .catch((err) => {
       console.log(err);
