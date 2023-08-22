@@ -1,4 +1,5 @@
 const express = require("express");
+const cheerio = require("cheerio");
 const router = express.Router();
 const axios = require("axios");
 require("dotenv").config();
@@ -46,24 +47,33 @@ router.get("/users/:id", async (req, res) => {
         });
       });
 
-      const allResponses = await Promise.all(requests);
-      allResponses.forEach((user_Info, index) => {
-        if (user_Info) {
-          const user = user_Info.data;
-          users_Info.push({
-            profile_img: user.avatar_url,
-            id: user.login,
-            name: user.name,
-            bio: user.bio,
-            company: user.company,
-            public_repos: user.public_repos,
-            followers: user.followers,
-            following: user.following,
-            location: user.location,
-          });
-        }
+      const responses = await Promise.all(requests);
+
+      const users_Info = await Promise.all(
+        responses.map(async (user_Info) => {
+          if (user_Info) {
+            const user = user_Info.data;
+            const commit = await getCommitCount(user.html_url);
+            return {
+              profile_img: user.avatar_url,
+              id: user.login,
+              url: user.html_url,
+              name: user.name,
+              bio: user.bio,
+              company: user.company,
+              public_repos: user.public_repos,
+              followers: user.followers,
+              following: user.following,
+              location: user.location,
+              commit: commit,
+              type: user.type,
+            };
+          }
+        })
+      );
+      users_Info.push({
+        total: users.total_count,
       });
-      users_Info.push(users.total_count);
       res.send(users_Info);
     })
     .catch((error) => {
@@ -71,5 +81,21 @@ router.get("/users/:id", async (req, res) => {
       console.log(error.response.data);
     });
 });
+
+async function getCommitCount(url) {
+  try {
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+
+    const contributionSelector = "h2.f4.text-normal.mb-2";
+    const contributionText = $(contributionSelector).text();
+    const contributionNum = contributionText.match(/\d+/)[0];
+    if (contributionNum >= 0) {
+        return contributionNum;
+    }
+  } catch (error) {
+    return null;
+  }
+}
 
 module.exports = router;
