@@ -27,7 +27,7 @@ router.get("/users/:id", async (req, res) => {
   let users_Info = [];
   axios
     .get(
-      `https://api.github.com/search/users?q=${id}&per_page=10&page=${page}`,
+      `https://api.github.com/search/users?q=${id} type:user&per_page=10&page=${page}`,
       {
         headers: {
           Authorization: "Bearer " + env.GITHUB_TOKEN,
@@ -66,14 +66,15 @@ router.get("/users/:id", async (req, res) => {
               following: user.following,
               location: user.location,
               commit: commit,
-              type: user.type,
             };
           }
         })
       );
-      users_Info.push({
-        total: users.total_count,
-      });
+      if (users_Info.length > 0 || page == 1) {
+        users_Info.push({
+          total: users.total_count,
+        });
+      }
       res.send(users_Info);
     })
     .catch((error) => {
@@ -91,9 +92,10 @@ async function getCommitCount(url) {
     const contributionText = $(contributionSelector).text();
     const contributionNum = contributionText.match(/\d+/)[0];
     if (contributionNum >= 0) {
-        return contributionNum;
+      return contributionNum;
     }
   } catch (error) {
+    console.log(error.response.status);
     return null;
   }
 }
