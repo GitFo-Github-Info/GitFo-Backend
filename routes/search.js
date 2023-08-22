@@ -6,10 +6,16 @@ require("dotenv").config();
 
 const env = process.env;
 
+const header = `headers: {
+    Authorization: "Bearer " + ${env.GITHUB_TOKEN},
+  }`;
+
 router.get("/:id", (req, res) => {
   const id = req.params.id;
   axios
-    .get(`https://api.github.com/users/${id}`)
+    .get(`https://api.github.com/users/${id}`, {
+      header,
+    })
     .then((response) => {
       const user_data = response.data;
       //   console.log(user_data);
@@ -29,9 +35,7 @@ router.get("/users/:id", async (req, res) => {
     .get(
       `https://api.github.com/search/users?q=${id} type:user&per_page=10&page=${page}`,
       {
-        headers: {
-          Authorization: "Bearer " + env.GITHUB_TOKEN,
-        },
+        header,
       }
     )
     .then(async (response) => {
@@ -41,9 +45,7 @@ router.get("/users/:id", async (req, res) => {
           return null;
         }
         return axios.get(item.url, {
-          headers: {
-            Authorization: "Bearer " + env.GITHUB_TOKEN,
-          },
+          header,
         });
       });
 
