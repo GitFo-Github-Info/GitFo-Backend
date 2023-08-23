@@ -1,4 +1,5 @@
 require("dotenv").config();
+const cors = require("cors");
 const morgan = require("morgan");
 const express = require("express");
 const session = require("express-session");
@@ -8,8 +9,9 @@ const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const searchRouter = require("./routes/search");
 
-const env = process.env;
+app.use(cors());
 const app = express();
+const env = process.env;
 app.set("port", process.env.PORT || 3000);
 
 if (env.NODE_ENV === "production") {

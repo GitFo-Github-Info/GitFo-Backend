@@ -18,7 +18,6 @@ router.get("/:id", (req, res) => {
     })
     .then((response) => {
       const user_data = response.data;
-      //   console.log(user_data);
       res.send(user_data);
     })
     .catch((error) => {
@@ -97,7 +96,7 @@ async function getCommitCount(url) {
       return contributionNum;
     }
   } catch (error) {
-    console.log(error.response.status);
+    console.error(`Error: ${error.message}`);
     return null;
   }
 }
