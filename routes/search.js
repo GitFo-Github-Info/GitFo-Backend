@@ -44,7 +44,7 @@ router.get("/users/:id", async (req, res) => {
   const page = req.query.page;
   try {
     const response = await axios.get(
-      `https://api.github.com/search/users?q=${id} type:user&per_page=10&page=${page}`,
+      `https://api.github.com/search/users?q=${id} type:user&per_page=5&page=${page}`,
       {
         header,
       }
