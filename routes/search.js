@@ -10,35 +10,33 @@ const header = `headers: {
     Authorization: "Bearer " + ${env.GITHUB_TOKEN},
   }`;
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const user_Info = [];
-  axios
-    .get(`https://api.github.com/users/${id}`, {
+  try {
+    const response = axios.get(`https://api.github.com/users/${id}`, {
       header,
-    })
-    .then(async (response) => {
-      const user = response.data;
-      const commit = await getCommitCount(user.html_url);
-      user_Info.push({
-        profile_img: user.avatar_url,
-        id: user.login,
-        url: user.html_url,
-        name: user.name,
-        bio: user.bio,
-        company: user.company,
-        public_repos: user.public_repos,
-        followers: user.followers,
-        following: user.following,
-        location: user.location,
-        commit: commit,
-      });
-      res.send(user_Info);
-    })
-    .catch((error) => {
-      console.log("API 호출 실패:", error.response.status);
-      console.log(error.response.data);
     });
+    const user = response.data;
+    const commit = await getCommitCount(user.html_url);
+    user_Info.push({
+      profile_img: user.avatar_url,
+      id: user.login,
+      url: user.html_url,
+      name: user.name,
+      bio: user.bio,
+      company: user.company,
+      public_repos: user.public_repos,
+      followers: user.followers,
+      following: user.following,
+      location: user.location,
+      commit: commit,
+    });
+    res.send(user_Info);
+  } catch (error) {
+    console.log("API 호출 실패:", error.response.status);
+    console.log(error.response.data);
+  }
 });
 
 router.get("/users/:id", async (req, res) => {
