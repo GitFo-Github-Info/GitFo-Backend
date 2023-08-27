@@ -33,14 +33,19 @@ router.get("/:id", async (req, res) => {
       commit: commit,
     });
     if (user_Info.length > 0) {
-        return res.send(user_Info);
+        return res.status(200).send(user_Info);
     }
     if (!(user_Info.length > 0)) {
-        return res.send("not found");
+        return res.status(500).send("not found");
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    console.log(error.response.status);
+    if (error.response.status == 404) {
+        return res.status(200).send("not found");
+    }
+    if (error.response.status != 404) {
+        return res.status(500).send(error);
+    }
   }
 });
 
