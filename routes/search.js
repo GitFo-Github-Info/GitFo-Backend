@@ -11,10 +11,10 @@ const header = `headers: {
   }`;
 
 router.get("/:id", async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const user_Info = [];
   try {
-    const response = axios.get(`https://api.github.com/users/${id}`, {
+    const response = await axios.get(`https://api.github.com/users/${id}`, {
       header,
     });
     const user = response.data;
@@ -32,7 +32,12 @@ router.get("/:id", async (req, res) => {
       location: user.location,
       commit: commit,
     });
-    res.send(user_Info);
+    if (user_Info.length > 0) {
+        return res.send(user_Info);
+    }
+    if (!(user_Info.length > 0)) {
+        return res.send("not found");
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
